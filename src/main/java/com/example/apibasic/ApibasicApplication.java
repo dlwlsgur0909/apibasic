@@ -8,8 +8,8 @@ public class ApibasicApplication {
 
 	public static void main(String[] args) {
 		// 주석~~~
-		int a = 10;
-		System.out.println(a);
+//		int a = 10;
+//		System.out.println(a);
 		SpringApplication.run(ApibasicApplication.class, args);
 	}
 
