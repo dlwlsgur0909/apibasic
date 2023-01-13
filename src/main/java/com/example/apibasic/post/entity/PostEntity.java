@@ -1,5 +1,7 @@
 package com.example.apibasic.post.entity;
 
+import com.example.apibasic.post.dto.PostResponseDTO;
+import com.example.apibasic.post.dto.PostUpdateDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
@@ -14,6 +16,8 @@ import java.util.List;
 @Builder
 public class PostEntity {
 
+    public static long sequence = 1L; // 연속된 일련 번호
+
     private Long postNo; // 게시물 식별 번호
     private String writer; // 작성자
     private String title; // 제목
@@ -25,7 +29,16 @@ public class PostEntity {
     private LocalDateTime modifyDate; // 수정 시간
 
 
+    public void updateEntity(PostUpdateDTO updateDTO) {
+        if(updateDTO.getContent()!=null) {
+            this.content = updateDTO.getContent();
+        }
+        if(updateDTO.getTitle()!=null) {
+            this.title = updateDTO.getTitle();
+        }
 
+        this.modifyDate = LocalDateTime.now();
+    }
 
 
 

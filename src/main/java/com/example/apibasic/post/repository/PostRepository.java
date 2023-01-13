@@ -38,7 +38,7 @@ public class PostRepository {
     // 게시물 등록, 수정
     public boolean save(PostEntity postEntity) {
         PostEntity post = posts.put(postEntity.getPostNo(), postEntity);
-        return post != null;
+        return true;
     }
 
     // 게시물 삭제
