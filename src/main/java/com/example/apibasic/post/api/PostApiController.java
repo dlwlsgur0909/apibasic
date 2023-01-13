@@ -4,8 +4,11 @@ import com.example.apibasic.post.entity.PostEntity;
 import com.example.apibasic.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 // 리소스 : 게시물(Post)
 /*
@@ -49,21 +52,28 @@ public class PostApiController {
     @GetMapping
     public ResponseEntity<?> list() {
         log.info("/posts GET request");
-        return null;
+        List<PostEntity> list = postRepository.findAll();
+        return ResponseEntity
+                .ok()
+                .body(list);
     }
 
     // 게시물 개별 조회
     @GetMapping("/{postNo}")
     public ResponseEntity<?> detail(@PathVariable("postNo") Long postNo) { // 파라미터 이름과 변수명이 같으면 PathVariable 안의 내용은 생략 가능
         log.info("/posts/{} GET request", postNo);
-        return null;
+        return ResponseEntity
+                .ok()
+                .body(postRepository.findOne(postNo));
     }
 
     // 게시글 등록
     @PostMapping
-    public ResponseEntity<?> create() {
+    public ResponseEntity<?> create(@RequestBody PostEntity entity) {
         log.info("/post POST request");
-        return null;
+        log.info("게시물 정보: {}", entity);
+        boolean flag = postRepository.save(entity);
+        return ResponseEntity.ok().body("INSERT-SUCCESS");
     }
 
     // 게시글 수정
