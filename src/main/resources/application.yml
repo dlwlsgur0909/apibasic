@@ -1,3 +1,12 @@
 # server.port=8181 # properties ??
-server:
-  port:  8181
+
+# yml ??
+
+#server:
+#  port: 8181
+#
+#spring:
+#  datasource:
+#    url: xxx
+#    username: xxx
+#    password: xxx
