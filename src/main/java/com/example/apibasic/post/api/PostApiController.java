@@ -1,24 +1,19 @@
 package com.example.apibasic.post.api;
 
 import com.example.apibasic.post.dto.*;
-import com.example.apibasic.post.entity.PostEntity;
-import com.example.apibasic.post.repository.PostRepository;
 import com.example.apibasic.post.service.PostService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 // 리소스 : 게시물(Post)
 /*
