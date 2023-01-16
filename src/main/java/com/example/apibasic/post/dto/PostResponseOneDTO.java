@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -33,7 +34,6 @@ public class PostResponseOneDTO {
         this.author = entity.getWriter();
         this.title = entity.getTitle();
         this.content = entity.getContent();
-        this.hashTags = entity.getHashTags();
         this.regDate = entity.getCreateDate();
         this.modifyDate = entity.getModifyDate();
     }

@@ -5,11 +5,11 @@ import com.example.apibasic.post.entity.PostEntity;
 import com.example.apibasic.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Id;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -42,13 +42,13 @@ public class PostService {
 
     // 개별 조회 중간 처리
     public PostResponseOneDTO getDetail(Long postNo) {
-        PostEntity post = postRepository.findOne(postNo);
+        Optional<PostEntity> post = postRepository.findById(postNo);
 
-        if(post == null) throw new RuntimeException(postNo + "번 게시물이 존재하지 않습니다!");
+        if(post.isEmpty()) throw new RuntimeException(postNo + "번 게시물이 존재하지 않습니다!");
 
         // entity를 dto로 변환
 
-        return new PostResponseOneDTO(post);
+        return new PostResponseOneDTO(post.get());
     }
 
 
@@ -57,21 +57,25 @@ public class PostService {
 
         // dto를 entity로 변환
         final PostEntity entity = createDTO.toEntity();
-        return postRepository.save(entity);
+        postRepository.save(entity);
+        return true;
     }
 
     //  수정 중간 처리
     public boolean update(Long postNo, final PostUpdateDTO updateDTO) {
         // DTO를 entity로 변환
-        final PostEntity entity = postRepository.findOne(postNo);
+        Optional<PostEntity> foundById = postRepository.findById(postNo);
+        final PostEntity entity = (PostEntity) foundById.get();
         entity.updateEntity(updateDTO);
+        postRepository.save(entity);
 
-        return postRepository.save(entity);
+        return true;
     }
 
     // 삭제 중간처리
     public boolean delete(Long postNo) {
-        return postRepository.delete(postNo);
+        postRepository.deleteById(postNo);
+        return true;
     }
 
 

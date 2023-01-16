@@ -148,11 +148,12 @@ class MemberRepositoryTest {
 
 
         // when
-        // JPA에서 수정은 조회 후 setter로 변경
+        // JPA에서 수정은 조회 후 setter로 변경 후 다시 save
         Optional<MemberEntity> foundMember = memberRepository.findById(userCode);
         foundMember.ifPresent(m -> {
             m.setNickName(newNickName);
             m.setGender(newGender);
+            memberRepository.save(m);
         });
 
 
