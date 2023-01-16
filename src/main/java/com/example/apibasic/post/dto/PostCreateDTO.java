@@ -1,6 +1,7 @@
 package com.example.apibasic.post.dto;
 
 import com.example.apibasic.post.entity.PostEntity;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.*;
 
 import javax.validation.constraints.Max;
@@ -28,7 +29,7 @@ public class PostCreateDTO {
     @Size(min = 2, max = 5)
     private String writer;
     @NotBlank
-    @Min(1) @Max(20)
+    @Size(min = 1, max = 20)
     private String title;
     private String content;
     private List<String> hashTags;

@@ -1,15 +1,16 @@
-# server.port=8181 # properties ??
+# server.port=8181 # properties 방식
 
-# yml ??
+# yml 방식
 
 #server:
 #  port: 8181
 
-#spring:
-#  datasource:
-#    url: xxx
-#    username: xxx
-#    password: xxx
+# Database Connection
+spring:
+  datasource:
+    url: jdbc:mariadb://127.0.0.1:3306/demodb
+    username: root
+    password: mariadb
 
 # logging ??? default? info ?? ??? ???? ???
 # trace? debug? ?? ??? ????? ?
@@ -28,3 +29,7 @@ logging:
       example:
         apibasic:
           req: trace
+
+springdoc:
+  swagger-ui:
+    path: /myapi.html
