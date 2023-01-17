@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -113,10 +115,16 @@ public class PostApiController {
         log.info("/post POST request");
         log.info("게시물 정보: {}", createDTO);
 
-        // DTO를 entity로 변환
-        return postService.insert(createDTO)
-                ? ResponseEntity.ok().body("INSERT-SUCCESS")
-                : ResponseEntity.badRequest().body("INSERT-FAIL");
+        try {
+            PostResponseOneDTO responseDTO = postService.insert(createDTO);
+            return ResponseEntity
+                    .ok()
+                    .body(responseDTO);
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
+        }
     }
 
     // 게시글 수정
@@ -124,20 +132,36 @@ public class PostApiController {
     public ResponseEntity<?> modify(@PathVariable Long postNo, @RequestBody PostUpdateDTO updateDTO) {
         log.info("/post/{} PATCH request", postNo);
 
-        // DTO를 entity로 변환
-        return postService.update(postNo, updateDTO)
-                ? ResponseEntity.ok().body("UPDATE-SUCCESS")
-                : ResponseEntity.badRequest().body("UPDATE-FAIL")
-                ;
+        try {
+            PostResponseOneDTO responseOneDTO = postService.update(postNo, updateDTO);
+            return ResponseEntity
+                    .ok()
+                    .body(responseOneDTO);
+        } catch (RuntimeException e) {
+            log.error("update fail : caused by - {}", e.getMessage());
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
+        }
+
     }
 
     // 게시글 삭제
     @DeleteMapping("/{postNo}")
     public ResponseEntity<?> remove(@PathVariable Long postNo) {
         log.info("/post/{} DELETE request", postNo);
-        return postService.delete(postNo)
-                ? ResponseEntity.ok().body("DELETE-SUCCESS")
-                : ResponseEntity.badRequest().body("DELETE-FAIL");
+
+        try {
+            postService.delete(postNo);
+            return ResponseEntity
+                    .ok()
+                    .body("Delete Success!");
+        } catch (RuntimeException e) {
+            log.error("delete fail : caused by - {}", e.getMessage());
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
+        }
     }
 
 

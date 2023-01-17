@@ -9,7 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 // 게시물의 데이터 자바빈즈
 @Getter @Setter @ToString
@@ -18,25 +17,27 @@ import java.util.List;
 @EqualsAndHashCode(of="postNo")
 @Builder
 // JPA
-@Entity
+@Entity // JpaRepository가 entity로 인식할 수 있도록 해주는 어노테이션
 @Table(name = "tbl_post")
 public class PostEntity {
 
 
-    @Id
+    @Id // Entity는 기본키를 필수적으로 가지고 있어야 한다
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postNo; // 게시물 식별 번호
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String writer; // 작성자
     @Column(nullable = false)
     private String title; // 제목
     @Column(nullable = false)
     private String content; // 내용
 //    private List<String> hashTags; // 해시태그 목록
-   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    // JsonFormat은 클라이언트에서 받는 데이터의 형식을 지정하는 것이므로 DTO에서 적용하도록 한다
+    // Validation은 DTO에서
    @CreationTimestamp
     private LocalDateTime createDate; // 작성 시간
-   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
    @UpdateTimestamp
     private LocalDateTime modifyDate; // 수정 시간
 
@@ -48,7 +49,6 @@ public class PostEntity {
         if(updateDTO.getTitle()!=null) {
             this.title = updateDTO.getTitle();
         }
-
 //        this.modifyDate = LocalDateTime.now();
     }
 

@@ -5,9 +5,9 @@ import com.example.apibasic.post.entity.PostEntity;
 import com.example.apibasic.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Id;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,40 +42,59 @@ public class PostService {
 
     // 개별 조회 중간 처리
     public PostResponseOneDTO getDetail(Long postNo) {
-        Optional<PostEntity> post = postRepository.findById(postNo);
+        PostEntity post = postRepository
+                .findById(postNo)
+                .orElseThrow(() ->
+                        new RuntimeException(postNo + "번 게시물이 존재하지 않습니다!")
+                );
 
-        if(post.isEmpty()) throw new RuntimeException(postNo + "번 게시물이 존재하지 않습니다!");
+        // orElse: null일 경우 매개변수 안으로 대체하겠다
+        // orElseThrow: null일 경우 매개변수 에러를 발생시키겠다
+
 
         // entity를 dto로 변환
-
-        return new PostResponseOneDTO(post.get());
+        return new PostResponseOneDTO(post);
     }
 
 
     // 등록 중간처리
-    public boolean insert(final PostCreateDTO createDTO) {
-
+    public PostResponseOneDTO insert(final PostCreateDTO createDTO)
+            throws IllegalArgumentException, OptimisticLockingFailureException // RuntimeException의 종류
+    {
         // dto를 entity로 변환
         final PostEntity entity = createDTO.toEntity();
-        postRepository.save(entity);
-        return true;
+
+        // entity 저장
+        PostEntity savedPost = postRepository.save(entity);
+
+        // 저장된 객체를 DTO로 변환
+
+        return new PostResponseOneDTO(savedPost);
     }
 
     //  수정 중간 처리
-    public boolean update(Long postNo, final PostUpdateDTO updateDTO) {
+    public PostResponseOneDTO update(Long postNo, final PostUpdateDTO updateDTO)
+        throws RuntimeException
+    {
         // DTO를 entity로 변환
-        Optional<PostEntity> foundById = postRepository.findById(postNo);
-        final PostEntity entity = (PostEntity) foundById.get();
+        final PostEntity entity = postRepository
+                .findById(postNo)
+                .orElseThrow(() -> new RuntimeException("Data Does Not Exist"));
+        // 수정
         entity.updateEntity(updateDTO);
-        postRepository.save(entity);
 
-        return true;
+        // 수정 된 entity 저장
+        PostEntity modifiedPost = postRepository.save(entity);
+
+        // 수정된 entity를 DTO로 변환
+        return new PostResponseOneDTO(modifiedPost);
     }
 
     // 삭제 중간처리
-    public boolean delete(Long postNo) {
+    public void delete(final Long postNo)
+        throws RuntimeException
+    {
         postRepository.deleteById(postNo);
-        return true;
     }
 
 
