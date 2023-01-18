@@ -1,7 +1,9 @@
 package com.example.apibasic.post.service;
 
 import com.example.apibasic.post.dto.*;
+import com.example.apibasic.post.entity.HashTagEntity;
 import com.example.apibasic.post.entity.PostEntity;
+import com.example.apibasic.post.repository.HashTagRepository;
 import com.example.apibasic.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +13,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final HashTagRepository hashTagRepository;
 
     // 목록 조회 중간처리
     public PostListResponseDTO getList(PageRequestDTO pageRequestDTO) {
@@ -75,9 +80,11 @@ public class PostService {
 
 
     // 등록 중간처리
+    @Transactional // DML 쿼리가 여러개 동시에 나가는 상황에서 트랜잭션 처리
     public PostResponseOneDTO insert(final PostCreateDTO createDTO)
             throws IllegalArgumentException, OptimisticLockingFailureException // RuntimeException의 종류
     {
+
 
         // dto를 entity로 변환
         final PostEntity entity = createDTO.toEntity();
@@ -85,8 +92,25 @@ public class PostService {
         // entity 저장
         PostEntity savedPost = postRepository.save(entity);
 
-        // 저장된 객체를 DTO로 변환
+        // hashtag를 DB에 저장
+        List<String> hashTags = createDTO.getHashTags();
 
+        // hashtag 문자열 리스트에서 문자열들을 하나하나 추출한 뒤 hashtag entity로 만들고
+        // 그 entity들을 DB에 저장한다
+        List<HashTagEntity> hashTagEntities = new ArrayList<>(); // 저장할 태그들을 담을 리스트
+        hashTags.forEach(ht -> {
+            HashTagEntity tagEntity = HashTagEntity.builder()
+                    .post(savedPost)
+                    .tagName(ht)
+                    .build();
+
+            HashTagEntity savedTag = hashTagRepository.save(tagEntity); // 태그를 DE에 저장하지만 Transactional로 인해 바로 조회가 불가능
+            hashTagEntities.add(savedTag); // commit전에 태그들을 조회하기 위해서 리스트에 태그들을 담는다
+        });
+
+        savedPost.setHashTags(hashTagEntities); // setter를 통해서 저장된 해시태그 리스트들을 게시물 entity에 추가
+
+        // 저장된 객체를 DTO로 변환
         return new PostResponseOneDTO(savedPost);
     }
 

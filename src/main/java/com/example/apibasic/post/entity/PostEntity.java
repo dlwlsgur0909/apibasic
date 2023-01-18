@@ -9,6 +9,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 // 게시물의 데이터 자바빈즈
 @Getter @Setter @ToString
@@ -31,13 +33,17 @@ public class PostEntity {
     private String title; // 제목
     @Column(nullable = false)
     private String content; // 내용
-//    private List<String> hashTags; // 해시태그 목록
-//   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
+    @OneToMany(mappedBy = "post")
+    private List<HashTagEntity> hashTags = new ArrayList<>(); // 해시태그 목록
+
+    // @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     // JsonFormat은 클라이언트에서 받는 데이터의 형식을 지정하는 것이므로 DTO에서 적용하도록 한다
     // Validation은 DTO에서
    @CreationTimestamp
     private LocalDateTime createDate; // 작성 시간
-//   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
+    // @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
    @UpdateTimestamp
     private LocalDateTime modifyDate; // 수정 시간
 
