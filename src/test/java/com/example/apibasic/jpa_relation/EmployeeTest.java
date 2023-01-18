@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -33,14 +34,20 @@ class EmployeeTest {
                 .build();
 
         Employee emp1 = Employee.builder()
-                .empName("뽀삐")
-                .department(dept2)
+                .empName("푸파파")
+                .department(dept1)
+                .build();
+
+        Employee emp2 = Employee.builder()
+                .empName("헬로키티")
+                .department(dept1)
                 .build();
 
         departmentRepository.save(dept1);
         departmentRepository.save(dept2);
 
         employeeRepository.save(emp1);
+        employeeRepository.save(emp2);
 
 
     }
@@ -56,6 +63,24 @@ class EmployeeTest {
 
         System.out.println("foundEmp = " + foundEmp.getEmpName());
         System.out.println("foundEmp = " + foundEmp.getDepartment().getDeptName());
+
+    }
+
+
+    @Test
+    @Transactional
+    void empTest3() {
+
+        Department dept = departmentRepository
+                .findById(1L)
+                .orElseThrow();
+
+        System.out.println("dept = " + dept);
+
+        List<Employee> employees = dept.getEmployees();
+
+        employees.forEach(System.out::println);
+
 
     }
 
